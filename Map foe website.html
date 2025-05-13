@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive World Map</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: #fff;
+    }
+
+    .outer-wrapper {
+      width: 100vw;
+      height: 100vh;
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;
+      cursor: grab;
+    }
+
+    .map-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .map-image {
+      display: block;
+      height: 100vh;
+    }
+
+    .map-button {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #90ee90; /* Light green base color */
+      border: none;
+      border-radius: 50%; /* Changed to 50% for perfect circle */
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .map-button:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 10px rgba(144, 238, 144, 0.8);
+    }
+
+    .map-button:hover::after {
+      content: attr(data-label);
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      font-size: 14px;
+      z-index: 10;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); background-color: #90ee90; }
+      50% { opacity: 0.3; transform: scale(1.1); background-color: #c8f7c8; }
+    }
+
+    /* Button positions with staggered animations - all light green */
+    .usa { 
+      top: 37%; 
+      left: 400px; 
+      animation: blink 2s infinite; 
+    }
+    .canada { 
+      top: 20%; 
+      left: 400px; 
+      animation: blink 2s infinite 0.3s; 
+    }
+    .uae { 
+      top: 47%; 
+      left: 1220px; 
+      animation: blink 2s infinite 0.6s; 
+    }
+    .india { 
+      top: 42%; 
+      left: 1360px; 
+      animation: blink 2s infinite 0.9s; 
+    }
+    .kerala { 
+      top: 53%; 
+      left: 1350px; 
+      animation: blink 2s infinite 1.2s; 
+    }
+    .japan { 
+      top: 36%; 
+      left: 1700px; 
+      animation: blink 2s infinite 1.5s; 
+    }
+    .australia { 
+      top: 83%; 
+      left: 1650px; 
+      animation: blink 2s infinite 1.8s; 
+    }
+  </style>
+</head>
+<body>
+  <div class="outer-wrapper" id="scroll-container">
+    <div class="map-container" id="map-container">
+      <img src="MAP FOR PROGRAMING.svg" class="map-image" id="map-img" alt="World Map" />
+      <button class="map-button usa" data-label="USA" aria-label="USA location"></button>
+      <button class="map-button canada" data-label="Canada" aria-label="Canada location"></button>
+      <button class="map-button uae" data-label="UAE" aria-label="UAE location"></button>
+      <button class="map-button india" data-label="India" aria-label="India location"></button>
+      <button class="map-button kerala" data-label="Kerala" aria-label="Kerala location"></button>
+      <button class="map-button japan" data-label="Japan" aria-label="Japan location"></button>
+      <button class="map-button australia" data-label="Australia" aria-label="Australia location"></button>
+    </div>
+  </div>
+
+  <script>
+    const container = document.getElementById('scroll-container');
+    const mapImg = document.getElementById('map-img');
+    const mapContainer = document.getElementById('map-container');
+
+    // Smooth horizontal scrolling based on mouse position
+    document.addEventListener('mousemove', (e) => {
+      const width = window.innerWidth;
+      const percent = e.clientX / width;
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+      container.scrollLeft = maxScrollLeft * percent * 0.8; // Reduced sensitivity
+    });
+
+    // Responsive map sizing
+    mapImg.onload = () => {
+      const ratio = window.innerHeight / mapImg.naturalHeight;
+      mapContainer.style.width = mapImg.naturalWidth * ratio + 'px';
+    };
+
+    // Button click handlers
+    document.querySelectorAll('.map-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const location = button.getAttribute('data-label');
+        alert(`You selected ${location}!`);
+        // Replace with your actual functionality
+      });
+    });
+  </script>
+</body>
+</html>
