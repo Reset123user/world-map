@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Interactive World Map</title>
   <style>
     body {
@@ -11,7 +11,6 @@
       background-color: #000;
       font-family: Arial, sans-serif;
       color: #fff;
-      touch-action: pan-x; /* Better touch control */
     }
 
     .outer-wrapper {
@@ -20,47 +19,36 @@
       overflow-x: scroll;
       overflow-y: hidden;
       white-space: nowrap;
-      -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+      cursor: grab;
     }
 
     .map-container {
       position: relative;
       display: inline-block;
-      height: 100vh;
     }
 
     .map-image {
+      display: block;
       height: 100vh;
-      max-width: none;
-      pointer-events: none; /* Better touch handling */
     }
 
     .map-button {
       position: absolute;
       width: 20px;
       height: 20px;
-      background-color: #90ee90;
+      background-color: #90ee90; /* Light green base color */
       border: none;
-      border-radius: 50%;
+      border-radius: 50%; /* Changed to 50% for perfect circle */
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
-      z-index: 10;
     }
 
-    /* Larger buttons for mobile */
-    @media (max-width: 768px) {
-      .map-button {
-        width: 28px;
-        height: 28px;
-      }
-    }
-
-    .map-button:hover, .map-button:active {
+    .map-button:hover {
       transform: scale(1.2);
       box-shadow: 0 0 10px rgba(144, 238, 144, 0.8);
     }
 
-    .map-button::after {
+    .map-button:hover::after {
       content: attr(data-label);
       position: absolute;
       top: -30px;
@@ -73,14 +61,6 @@
       white-space: nowrap;
       font-size: 14px;
       z-index: 10;
-      opacity: 0;
-      transition: opacity 0.2s;
-      pointer-events: none;
-    }
-
-    .map-button:hover::after, 
-    .map-button:active::after {
-      opacity: 1;
     }
 
     @keyframes blink {
@@ -88,62 +68,41 @@
       50% { opacity: 0.3; transform: scale(1.1); background-color: #c8f7c8; }
     }
 
-    /* Button positions - percentage based for responsiveness */
+    /* Button positions with staggered animations - all light green */
     .usa { 
       top: 37%; 
-      left: 20%; 
+      left: 400px; 
       animation: blink 2s infinite; 
     }
     .canada { 
       top: 20%; 
-      left: 20%; 
+      left: 400px; 
       animation: blink 2s infinite 0.3s; 
     }
     .uae { 
       top: 47%; 
-      left: 58%; 
+      left: 1220px; 
       animation: blink 2s infinite 0.6s; 
     }
     .india { 
       top: 42%; 
-      left: 66%; 
+      left: 1360px; 
       animation: blink 2s infinite 0.9s; 
     }
     .kerala { 
       top: 53%; 
-      left: 65.5%; 
+      left: 1350px; 
       animation: blink 2s infinite 1.2s; 
     }
     .japan { 
-      top: 35%; 
-      left: 81.5%; 
+      top: 36%; 
+      left: 1700px; 
       animation: blink 2s infinite 1.5s; 
     }
     .australia { 
       top: 83%; 
-      left: 80%; 
+      left: 1650px; 
       animation: blink 2s infinite 1.8s; 
-    }
-
-    /* Mobile touch controls indicator */
-    .scroll-hint {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.7);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 14px;
-      display: none;
-      z-index: 100;
-    }
-
-    @media (max-width: 768px) {
-      .scroll-hint {
-        display: block;
-      }
     }
   </style>
 </head>
@@ -161,73 +120,33 @@
     </div>
   </div>
 
-  <div class="scroll-hint">← Swipe to explore →</div>
-
   <script>
     const container = document.getElementById('scroll-container');
     const mapImg = document.getElementById('map-img');
     const mapContainer = document.getElementById('map-container');
-    let isTouchDevice = 'ontouchstart' in window;
 
-    // Handle both mouse and touch movements
-    function handleMove(e) {
-      const clientX = isTouchDevice ? e.touches[0].clientX : e.clientX;
+    // Smooth horizontal scrolling based on mouse position
+    document.addEventListener('mousemove', (e) => {
       const width = window.innerWidth;
-      const percent = clientX / width;
+      const percent = e.clientX / width;
       const maxScrollLeft = container.scrollWidth - container.clientWidth;
-      container.scrollLeft = maxScrollLeft * percent * 0.8;
-    }
-
-    // Add appropriate event listeners based on device type
-    if (isTouchDevice) {
-      container.addEventListener('touchmove', handleMove, { passive: true });
-    } else {
-      document.addEventListener('mousemove', handleMove);
-    }
+      container.scrollLeft = maxScrollLeft * percent * 0.8; // Reduced sensitivity
+    });
 
     // Responsive map sizing
-    function resizeMap() {
-      if (mapImg.naturalHeight) {
-        const ratio = window.innerHeight / mapImg.naturalHeight;
-        mapContainer.style.width = mapImg.naturalWidth * ratio + 'px';
-        
-        // Adjust button sizes for mobile
-        const buttons = document.querySelectorAll('.map-button');
-        const buttonSize = window.innerWidth < 768 ? '28px' : '20px';
-        buttons.forEach(btn => {
-          btn.style.width = buttonSize;
-          btn.style.height = buttonSize;
-        });
-      }
-    }
-
-    mapImg.onload = resizeMap;
-    window.addEventListener('resize', resizeMap);
+    mapImg.onload = () => {
+      const ratio = window.innerHeight / mapImg.naturalHeight;
+      mapContainer.style.width = mapImg.naturalWidth * ratio + 'px';
+    };
 
     // Button click handlers
     document.querySelectorAll('.map-button').forEach(button => {
       button.addEventListener('click', () => {
         const location = button.getAttribute('data-label');
         alert(`You selected ${location}!`);
+        // Replace with your actual functionality
       });
-      
-      // Better touch feedback
-      if (isTouchDevice) {
-        button.addEventListener('touchstart', () => {
-          button.style.transform = 'scale(1.2)';
-        });
-        button.addEventListener('touchend', () => {
-          button.style.transform = 'scale(1)';
-        });
-      }
     });
-
-    // Hide scroll hint after first interaction
-    const scrollHint = document.querySelector('.scroll-hint');
-    container.addEventListener('scroll', () => {
-      scrollHint.style.opacity = '0';
-      setTimeout(() => scrollHint.style.display = 'none', 300);
-    }, { once: true });
   </script>
 </body>
 </html>
