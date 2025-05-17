@@ -2,151 +2,227 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Interactive World Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interactive World Map with Hover</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      height: 100%;
       overflow: hidden;
-      background-color: #000;
-      font-family: Arial, sans-serif;
-      color: #fff;
+      background: #000;
+      font-family: sans-serif;
+      touch-action: none;
     }
 
-    .outer-wrapper {
-      width: 100vw;
-      height: 100vh;
-      overflow-x: scroll;
-      overflow-y: hidden;
-      white-space: nowrap;
-      cursor: grab;
+    #viewport {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+    
+
+    #map-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
     }
 
-    .map-container {
+    .foreground {
+      width: 1920px;
+      height: 1080px;
+      background: url('WORLD MAP.png') no-repeat center center;
+      background-size: contain;
       position: relative;
-      display: inline-block;
     }
 
-    .map-image {
-      display: block;
-      height: 100vh;
-    }
-
-    .map-button {
+    .location-container {
       position: absolute;
-      width: 20px;
-      height: 20px;
-      background-color: #90ee90; /* Light green base color */
-      border: none;
-      border-radius: 50%; /* Changed to 50% for perfect circle */
+      text-align: center;
+      z-index: 10;
+      pointer-events: auto;
+    }
+
+    .location-button {
+      width: 18px;
+      height: 18px;
+      background: lightgreen;
+      border-radius: 50%;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: visible;
     }
 
-    .map-button:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 10px rgba(144, 238, 144, 0.8);
-    }
-
-    .map-button:hover::after {
-      content: attr(data-label);
+    .location-button::after,
+    .location-button::before {
+      content: "";
       position: absolute;
-      top: -30px;
+      top: 50%;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      background: lightgreen;
+      border-radius: 50%;
+      opacity: 0.5;
+      transform: translate(-50%, -50%) scale(0.5);
+      z-index: -1;
+    }
+
+    .location-button::after {
+      animation: ripple 2s infinite ease-out;
+    }
+
+    .location-button::before {
+      animation: ripple 2s 1s infinite ease-out;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 0.2;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(3);
+        opacity: 0;
+      }
+    }
+
+    .label {
+      display: none;
+      position: absolute;
+      top: 24px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: rgba(0, 0, 0, 0.8);
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 6px;
       white-space: nowrap;
-      font-size: 14px;
-      z-index: 10;
+      color: white;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
     }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; transform: scale(1); background-color: #90ee90; }
-      50% { opacity: 0.3; transform: scale(1.1); background-color: #c8f7c8; }
-    }
-
-    /* Button positions with staggered animations - all light green */
-    .usa { 
-      top: 37%; 
-      left: 400px; 
-      animation: blink 2s infinite; 
-    }
-    .canada { 
-      top: 20%; 
-      left: 400px; 
-      animation: blink 2s infinite 0.3s; 
-    }
-    .uae { 
-      top: 47%; 
-      left: 1220px; 
-      animation: blink 2s infinite 0.6s; 
-    }
-    .india { 
-      top: 42%; 
-      left: 1360px; 
-      animation: blink 2s infinite 0.9s; 
-    }
-    .kerala { 
-      top: 53%; 
-      left: 1350px; 
-      animation: blink 2s infinite 1.2s; 
-    }
-    .japan { 
-      top: 36%; 
-      left: 1700px; 
-      animation: blink 2s infinite 1.5s; 
-    }
-    .australia { 
-      top: 83%; 
-      left: 1650px; 
-      animation: blink 2s infinite 1.8s; 
+    .location-container:hover .label {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <div class="outer-wrapper" id="scroll-container">
-    <div class="map-container" id="map-container">
-      <img src="MAP FOR PROGRAMING.svg" class="map-image" id="map-img" alt="World Map" />
-      <button class="map-button usa" data-label="USA" aria-label="USA location"></button>
-      <button class="map-button canada" data-label="Canada" aria-label="Canada location"></button>
-      <button class="map-button uae" data-label="UAE" aria-label="UAE location"></button>
-      <button class="map-button india" data-label="India" aria-label="India location"></button>
-      <button class="map-button kerala" data-label="Kerala" aria-label="Kerala location"></button>
-      <button class="map-button japan" data-label="Japan" aria-label="Japan location"></button>
-      <button class="map-button australia" data-label="Australia" aria-label="Australia location"></button>
+  <div id="viewport">
+        <div id="map-container">
+      <div class="foreground">
+        <div class="location-container" style="top: 250px; left: 540px;">
+          <div class="location-button"></div>
+          <div class="label">USA</div>
+        </div>
+        <div class="location-container" style="top: 540px; left: 920px;">
+          <div class="location-button"></div>
+          <div class="label">India</div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    const container = document.getElementById('scroll-container');
-    const mapImg = document.getElementById('map-img');
-    const mapContainer = document.getElementById('map-container');
+    const viewport = document.getElementById("viewport");
+    const mapContainer = document.getElementById("map-container");
+    const cursorMarker = document.getElementById("cursor-marker");
 
-    // Smooth horizontal scrolling based on mouse position
-    document.addEventListener('mousemove', (e) => {
-      const width = window.innerWidth;
-      const percent = e.clientX / width;
-      const maxScrollLeft = container.scrollWidth - container.clientWidth;
-      container.scrollLeft = maxScrollLeft * percent * 0.8; // Reduced sensitivity
+    let scale = 1.5;
+    let targetScale = scale;
+    let offsetX = 0, offsetY = 0;
+    let targetOffsetX = 0, targetOffsetY = 0;
+
+    const mapWidth = 1920;
+    const mapHeight = 1080;
+
+    let cursorX = window.innerWidth * 0.5;
+    let cursorY = window.innerHeight * 0.5;
+
+    function clamp(val, min, max) {
+      return Math.min(Math.max(val, min), max);
+    }
+
+    function animateTransform() {
+      scale += (targetScale - scale) * 0.03;
+      offsetX += (targetOffsetX - offsetX) * 0.03;
+      offsetY += (targetOffsetY - offsetY) * 0.015;
+      mapContainer.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+      requestAnimationFrame(animateTransform);
+    }
+
+    function updateTargetOffsetsFromCursor() {
+      const scaledWidth = mapWidth * targetScale;
+      const scaledHeight = mapHeight * targetScale;
+      const maxOffsetX = scaledWidth - window.innerWidth;
+      const maxOffsetY = scaledHeight - window.innerHeight;
+      const ratioX = cursorX / window.innerWidth;
+      const ratioY = cursorY / window.innerHeight;
+      targetOffsetX = clamp(-maxOffsetX * ratioX, -maxOffsetX, 0);
+      targetOffsetY = clamp(-maxOffsetY * ratioY, -maxOffsetY, 0);
+          }
+
+    viewport.addEventListener("mousemove", (e) => {
+      cursorX = e.clientX;
+      cursorY = e.clientY;
+      updateTargetOffsetsFromCursor();
     });
 
-    // Responsive map sizing
-    mapImg.onload = () => {
-      const ratio = window.innerHeight / mapImg.naturalHeight;
-      mapContainer.style.width = mapImg.naturalWidth * ratio + 'px';
-    };
+    viewport.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.05 : 0.05;
+      targetScale = clamp(targetScale + delta, 1, 2.5);
+      updateTargetOffsetsFromCursor();
+    }, { passive: false });
 
-    // Button click handlers
-    document.querySelectorAll('.map-button').forEach(button => {
-      button.addEventListener('click', () => {
-        const location = button.getAttribute('data-label');
-        alert(`You selected ${location}!`);
-        // Replace with your actual functionality
-      });
+    let lastTouchDistance = null;
+    let lastTouchCenter = null;
+
+    function getDistance(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function getCenter(touches) {
+      return {
+        x: (touches[0].clientX + touches[1].clientX) / 2,
+        y: (touches[0].clientY + touches[1].clientY) / 2
+      };
+    }
+
+    viewport.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 2) {
+        lastTouchDistance = getDistance(e.touches);
+        lastTouchCenter = getCenter(e.touches);
+      }
     });
+
+    viewport.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 1) {
+        cursorX = e.touches[0].clientX;
+        cursorY = e.touches[0].clientY;
+        updateTargetOffsetsFromCursor();
+      } else if (e.touches.length === 2) {
+        const newDistance = getDistance(e.touches);
+        const center = getCenter(e.touches);
+        const distanceChange = newDistance - lastTouchDistance;
+        targetScale = clamp(targetScale + distanceChange * 0.001, 1, 2.5);
+        cursorX = center.x;
+        cursorY = center.y;
+        updateTargetOffsetsFromCursor();
+        lastTouchDistance = newDistance;
+        lastTouchCenter = center;
+      }
+    }, { passive: false });
+
+    updateTargetOffsetsFromCursor();
+    animateTransform();
   </script>
 </body>
 </html>
