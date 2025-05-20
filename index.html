@@ -132,12 +132,12 @@
 
     @media (max-width: 768px) {
       .location-button {
-        width: 12px;
-        height: 12px;
+        width: 20px;
+        height: 20px;
       }
       .location-button::before {
-        width: 12px;
-        height: 12px;
+        width: 20px;
+        height: 20px;
       }
       .label {
         font-size: 10px;
@@ -149,54 +149,19 @@
   <div id="viewport" role="region" aria-label="Interactive World Map">
     <div id="map-container">
       <div class="foreground">
-        <div class="location-container" style="top: 450px; left: 350px;">
-          <div class="location-button" role="button" aria-label="USA" tabindex="0"></div>
-          <div class="label" aria-hidden="true">USA</div>
-        </div>
-        <div class="location-container" style="top: 490px; left: 1270px;">
-          <div class="location-button" role="button" aria-label="India" tabindex="0"></div>
-          <div class="label" aria-hidden="true">INDIA</div>
-        </div>
-        <div class="location-container" style="top: 400px; left: 1580px;">
-          <div class="location-button" role="button" aria-label="Japan" tabindex="0"></div>
-          <div class="label" aria-hidden="true">Japan</div>
-        </div>
-        <div class="location-container" style="top: 750px; left: 1550px;">
-          <div class="location-button" role="button" aria-label="Australia" tabindex="0"></div>
-          <div class="label" aria-hidden="true">Australia</div>
-        </div>
-        <div class="location-container" style="top: 600px; left: 1250px;">
-          <div class="location-button" role="button" aria-label="Maldives" tabindex="0"></div>
-          <div class="label" aria-hidden="true">Maldives</div>
-        </div>
-        <div class="location-container" style="top: 480px; left: 1120px;">
-          <div class="location-button" role="button" aria-label="Kuwait" tabindex="0"></div>
-          <div class="label" aria-hidden="true">Kuwait</div>
-        </div>
-        <div class="location-container" style="top: 500px; left: 1140px;">
-          <div class="location-button" role="button" aria-label="Qatar" tabindex="0"></div>
-          <div class="label" aria-hidden="true">Qatar</div>
-        </div>
-        <div class="location-container" style="top: 350px; left: 380px;">
-          <div class="location-button" role="button" aria-label="Canada" tabindex="0"></div>
-          <div class="label" aria-hidden="true">Canada</div>
-        </div>
-        <div class="location-container" style="top: 480px; left: 1300px;">
-          <div class="location-button" role="button" aria-label="Nepal" tabindex="0"></div>
-          <div class="label" aria-hidden="true">Nepal</div>
-        </div>
-        <div class="location-container" style="top: 600px; left: 1390px;">
-          <div class="location-button" role="button" aria-label="Singapore" tabindex="0"></div>
-          <div class="label" aria-hidden="true">Singapore</div>
-        </div>
-        <div class="location-container" style="top: 450px; left: 1520px;">
-          <div class="location-button" role="button" aria-label="Korea" tabindex="0"></div>
-          <div class="label" aria-hidden="true">Korea</div>
-        </div>
-        <div class="location-container" style="top: 500px; left: 1170px;">
-          <div class="location-button" role="button" aria-label="UAE" tabindex="0"></div>
-          <div class="label" aria-hidden="true">UAE</div>
-        </div>
+        <!-- Locations -->
+        <div class="location-container" style="top: 450px; left: 350px;"><div class="location-button" aria-label="USA" tabindex="0"></div><div class="label">USA</div></div>
+        <div class="location-container" style="top: 490px; left: 1270px;"><div class="location-button" aria-label="India" tabindex="0"></div><div class="label">India</div></div>
+        <div class="location-container" style="top: 400px; left: 1580px;"><div class="location-button" aria-label="Japan" tabindex="0"></div><div class="label">Japan</div></div>
+        <div class="location-container" style="top: 750px; left: 1550px;"><div class="location-button" aria-label="Australia" tabindex="0"></div><div class="label">Australia</div></div>
+        <div class="location-container" style="top: 600px; left: 1250px;"><div class="location-button" aria-label="Maldives" tabindex="0"></div><div class="label">Maldives</div></div>
+        <div class="location-container" style="top: 480px; left: 1120px;"><div class="location-button" aria-label="Kuwait" tabindex="0"></div><div class="label">Kuwait</div></div>
+        <div class="location-container" style="top: 500px; left: 1140px;"><div class="location-button" aria-label="Qatar" tabindex="0"></div><div class="label">Qatar</div></div>
+        <div class="location-container" style="top: 350px; left: 380px;"><div class="location-button" aria-label="Canada" tabindex="0"></div><div class="label">Canada</div></div>
+        <div class="location-container" style="top: 480px; left: 1300px;"><div class="location-button" aria-label="Nepal" tabindex="0"></div><div class="label">Nepal</div></div>
+        <div class="location-container" style="top: 600px; left: 1390px;"><div class="location-button" aria-label="Singapore" tabindex="0"></div><div class="label">Singapore</div></div>
+        <div class="location-container" style="top: 450px; left: 1520px;"><div class="location-button" aria-label="Korea" tabindex="0"></div><div class="label">Korea</div></div>
+        <div class="location-container" style="top: 500px; left: 1170px;"><div class="location-button" aria-label="UAE" tabindex="0"></div><div class="label">UAE</div></div>
       </div>
     </div>
   </div>
@@ -205,21 +170,16 @@
     const viewport = document.getElementById("viewport");
     const mapContainer = document.getElementById("map-container");
 
-    let scale = 1.5;
+    const mapWidth = 1920;
+    const mapHeight = 1080;
+
+    let scale = window.innerWidth < 768 ? 1 : 1.5;
     let targetScale = scale;
     let offsetX = 0, offsetY = 0;
     let targetOffsetX = 0, targetOffsetY = 0;
 
-    const mapWidth = 1920;
-    const mapHeight = 1080;
-
     let cursorX = window.innerWidth * 0.5;
     let cursorY = window.innerHeight * 0.5;
-
-    // Touch drag detection variables
-    let touchStartX = null;
-    let touchStartY = null;
-    const dragThreshold = 10; // px
 
     function clamp(val, min, max) {
       return Math.min(Math.max(val, min), max);
@@ -229,6 +189,15 @@
       scale += (targetScale - scale) * 0.08;
       offsetX += (targetOffsetX - offsetX) * 0.08;
       offsetY += (targetOffsetY - offsetY) * 0.08;
+
+      const scaledWidth = mapWidth * scale;
+      const scaledHeight = mapHeight * scale;
+      const minOffsetX = window.innerWidth - scaledWidth;
+      const minOffsetY = window.innerHeight - scaledHeight;
+
+      offsetX = clamp(offsetX, minOffsetX, 0);
+      offsetY = clamp(offsetY, minOffsetY, 0);
+
       mapContainer.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
       requestAnimationFrame(animateTransform);
     }
@@ -245,6 +214,21 @@
     }
 
     let isTouching = false;
+    let touchStartX = null, touchStartY = null;
+    let lastTouchDistance = null, lastTouchCenter = null;
+
+    function getDistance(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function getCenter(touches) {
+      return {
+        x: (touches[0].clientX + touches[1].clientX) / 2,
+        y: (touches[0].clientY + touches[1].clientY) / 2
+      };
+    }
 
     viewport.addEventListener("mousemove", (e) => {
       if (!isTouching) {
@@ -261,29 +245,12 @@
       updateTargetOffsetsFromCursor();
     }, { passive: false });
 
-    let lastTouchDistance = null;
-    let lastTouchCenter = null;
-
-    function getDistance(touches) {
-      const dx = touches[0].clientX - touches[1].clientX;
-      const dy = touches[0].clientY - touches[1].clientY;
-      return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    function getCenter(touches) {
-      return {
-        x: (touches[0].clientX + touches[1].clientX) / 2,
-        y: (touches[0].clientY + touches[1].clientY) / 2
-      };
-    }
-
     viewport.addEventListener("touchstart", (e) => {
       isTouching = true;
       if (e.touches.length === 1) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
-      }
-      if (e.touches.length === 2) {
+      } else if (e.touches.length === 2) {
         lastTouchDistance = getDistance(e.touches);
         lastTouchCenter = getCenter(e.touches);
         touchStartX = null;
@@ -292,20 +259,15 @@
     });
 
     viewport.addEventListener("touchmove", (e) => {
-      if (e.touches.length === 1) {
-        const touchCurrentX = e.touches[0].clientX;
-        const touchCurrentY = e.touches[0].clientY;
-        if (touchStartX !== null && touchStartY !== null) {
-          const dx = touchCurrentX - touchStartX;
-          const dy = touchCurrentY - touchStartY;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          // Only update cursor and map if user dragged enough
-          if (distance > dragThreshold) {
-            cursorX = touchCurrentX;
-            cursorY = touchCurrentY;
-            updateTargetOffsetsFromCursor();
-          }
-        }
+      if (e.touches.length === 1 && touchStartX !== null && touchStartY !== null) {
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const dx = currentX - touchStartX;
+        const dy = currentY - touchStartY;
+        targetOffsetX += dx;
+        targetOffsetY += dy;
+        touchStartX = currentX;
+        touchStartY = currentY;
       } else if (e.touches.length === 2) {
         const newDistance = getDistance(e.touches);
         const center = getCenter(e.touches);
@@ -326,9 +288,7 @@
         isTouching = false;
         touchStartX = null;
         touchStartY = null;
-      }
-      if (e.touches.length === 1) {
-        // Reset start position to new single touch position for continued dragging
+      } else if (e.touches.length === 1) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
       }
@@ -339,4 +299,3 @@
   </script>
 </body>
 </html>
-
