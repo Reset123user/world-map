@@ -67,11 +67,9 @@
       border: 2px solid #66bb6a;
       box-shadow: 0 0 8px rgba(102, 187, 106, 0.6);
       transition: background 0.3s, transform 0.3s;
-      /* For ripple effect, the animation is on a pseudo-element */
       z-index: 1;
     }
 
-    /* Ripple effect */
     .location-button::before {
       content: "";
       position: absolute;
@@ -132,7 +130,6 @@
       display: block;
     }
 
-    /* Media Queries for Mobile Responsiveness */
     @media (max-width: 768px) {
       .location-button {
         width: 12px;
@@ -219,6 +216,11 @@
     let cursorX = window.innerWidth * 0.5;
     let cursorY = window.innerHeight * 0.5;
 
+    // Touch drag detection variables
+    let touchStartX = null;
+    let touchStartY = null;
+    const dragThreshold = 10; // px
+
     function clamp(val, min, max) {
       return Math.min(Math.max(val, min), max);
     }
@@ -277,17 +279,33 @@
 
     viewport.addEventListener("touchstart", (e) => {
       isTouching = true;
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
       if (e.touches.length === 2) {
         lastTouchDistance = getDistance(e.touches);
         lastTouchCenter = getCenter(e.touches);
+        touchStartX = null;
+        touchStartY = null;
       }
     });
 
     viewport.addEventListener("touchmove", (e) => {
       if (e.touches.length === 1) {
-        cursorX = e.touches[0].clientX;
-        cursorY = e.touches[0].clientY;
-        updateTargetOffsetsFromCursor();
+        const touchCurrentX = e.touches[0].clientX;
+        const touchCurrentY = e.touches[0].clientY;
+        if (touchStartX !== null && touchStartY !== null) {
+          const dx = touchCurrentX - touchStartX;
+          const dy = touchCurrentY - touchStartY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          // Only update cursor and map if user dragged enough
+          if (distance > dragThreshold) {
+            cursorX = touchCurrentX;
+            cursorY = touchCurrentY;
+            updateTargetOffsetsFromCursor();
+          }
+        }
       } else if (e.touches.length === 2) {
         const newDistance = getDistance(e.touches);
         const center = getCenter(e.touches);
@@ -298,11 +316,22 @@
         updateTargetOffsetsFromCursor();
         lastTouchDistance = newDistance;
         lastTouchCenter = center;
+        touchStartX = null;
+        touchStartY = null;
       }
     }, { passive: false });
 
-    viewport.addEventListener("touchend", () => {
-      isTouching = false;
+    viewport.addEventListener("touchend", (e) => {
+      if (e.touches.length === 0) {
+        isTouching = false;
+        touchStartX = null;
+        touchStartY = null;
+      }
+      if (e.touches.length === 1) {
+        // Reset start position to new single touch position for continued dragging
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
     });
 
     updateTargetOffsetsFromCursor();
