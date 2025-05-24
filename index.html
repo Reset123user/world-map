@@ -52,12 +52,12 @@
     }
 
     .location-button {
-      width: 14px;
-      height: 14px;
+      width: 10px;
+      height: 10px;
       background: lightgreen;
       border-radius: 50%;
-      border: 2px solid #66bb6a;
-      box-shadow: 0 0 8px rgba(102, 187, 106, 0.6);
+      border: 1px solid #66bb6a;
+      box-shadow: 0 0 6px rgba(102, 187, 106, 0.6);
       cursor: pointer;
       position: relative;
     }
@@ -68,10 +68,10 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 14px;
-      height: 14px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
-      border: 2px solid #66bb6a;
+      border: 1px solid #66bb6a;
       opacity: 0.6;
       animation: ripple 2.5s linear infinite;
     }
@@ -90,13 +90,13 @@
     .label {
       display: none;
       position: absolute;
-      top: 30px;
+      top: 24px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0,0,0,0.7);
       color: white;
-      font-size: 12px;
-      padding: 4px 8px;
+      font-size: 10px;
+      padding: 2px 6px;
       border-radius: 4px;
       white-space: nowrap;
       font-weight: bold;
@@ -113,7 +113,7 @@
     <div id="map-container">
       <div class="foreground">
         <div class="location-container" style="top: 450px; left: 350px;"><div class="location-button" aria-label="USA" tabindex="0"></div><div class="label">USA</div></div>
-        <div class="location-container" style="top: 490px; left: 1270px;"><div class="location-button" aria-label="India" tabindex="0"></div><div class="label">India</div></div>
+        <div class="location-container" style="top: 490px; left: 1270px;"><div class="location-button" aria-label="India" id="india-button" tabindex="0"></div><div class="label">India</div></div>
         <div class="location-container" style="top: 400px; left: 1580px;"><div class="location-button" aria-label="Japan" tabindex="0"></div><div class="label">Japan</div></div>
         <div class="location-container" style="top: 750px; left: 1550px;"><div class="location-button" aria-label="Australia" tabindex="0"></div><div class="label">Australia</div></div>
         <div class="location-container" style="top: 600px; left: 1250px;"><div class="location-button" aria-label="Maldives" tabindex="0"></div><div class="label">Maldives</div></div>
@@ -135,15 +135,22 @@
     const mapWidth = 1920;
     const mapHeight = 1080;
 
-    let scale = 0.5;
-    let targetScale = scale;
+    let scale = 0.7;
+    let targetScale = 0.7;
     const indiaX = 1270;
     const indiaY = 490;
 
     let offsetX = 0;
     let offsetY = 0;
-    let targetOffsetX = window.innerWidth / 2 - indiaX * scale;
-    let targetOffsetY = window.innerHeight / 2 - indiaY * scale;
+    let targetOffsetX = 0;
+    let targetOffsetY = 0;
+
+    function centerOnIndia() {
+      targetOffsetX = window.innerWidth / 2 - indiaX * targetScale;
+      targetOffsetY = window.innerHeight / 2 - indiaY * targetScale;
+      offsetX = targetOffsetX;
+      offsetY = targetOffsetY;
+    }
 
     function clamp(val, min, max) {
       return Math.min(Math.max(val, min), max);
@@ -248,6 +255,7 @@
       }
     }, { passive: false });
 
+    centerOnIndia();
     animate();
   </script>
 </body>
